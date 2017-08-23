@@ -74,9 +74,6 @@ var CourseSwitch = React.createClass({
 				thiz.setState({
 					isMouseDown: false
 				});
-				if (typeof(Storage) !== "undefined") {
-					sessionStorage.setItem("model", thiz.state.isCourse);
-				}
 			}, false);
 
 			// window.addEventListener(slideEnd, function(ev) {

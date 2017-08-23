@@ -6,21 +6,61 @@ var React = require('react');
 var CourseList = React.createClass({
 	getInitialState: function() {
 		return {
-			data_recent:[
-			{sessionID:"pub",time:"07-25 11:50:18"},{sessionID:"2001",time:"07-26 11:50:18"},{sessionID:"2002",time:"07-26 11:50:18"}
-			],
+			data_recent:[],
 			data_now:[
-			{sessionID:"pub",time:"07-25 11:50:18"},{sessionID:"2001",time:"07-26 11:50:18"},{sessionID:"2002",time:"07-26 11:50:18"}
+			{sessionID:"2001",time:"07-26 11:50:18"},{sessionID:"2002",time:"07-26 11:50:18"}
 			],
 			data_my:[
 			{sessionID:"pub",time:"07-25 11:50:18"},{sessionID:"2001",time:"07-26 11:50:18"},{sessionID:"2002",time:"07-26 11:50:18"}
 			],
 		};
 	},
+	componentWillMount:function(){
+		if(sessionStorage.recent){
+			var recent=JSON.parse(sessionStorage.getItem("recent"));
+			this.setState({
+				data_recent:recent 
+			});
+		}else{
+			var recent=this.state.data_recent;
+			var timenow=this.getAndFormatTime();
+			var pub={sessionID:"pub",time:timenow};
+			recent.push(pub);
+			this.setState({
+				data_recent:recent 
+			},function(){
+				sessionStorage.setItem("recent",JSON.stringify(recent));
+			});
+		}
+	},
 	componentDidMount:function(){
 			$('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
 				$('.join_input').val("");
 			});
+	},
+	getAndFormatTime:function(){
+			var time=new Date();
+			var month=time.getMonth()+1;
+			if(month<10){
+				month="0"+month
+			}
+			var day=time.getDate();
+			if(day<10){
+				day="0"+day;
+			}
+			var hour=time.getHours();
+			if(hour<10){
+				hour="0"+hour;
+			}
+			var minute=time.getMinutes();
+			if(minute<10){
+				minute="0"+minute;
+			}
+			var seconds=time.getSeconds();
+			if(seconds<10){
+				seconds="0"+seconds;
+			}
+			return month+"-"+day+"  "+hour+":"+minute+":"+seconds
 	},
 	render: function() {
 		return (

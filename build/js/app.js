@@ -51,7 +51,7 @@ window.addEventListener('click', function (e) {
   e.preventDefault();
 }, false);
 
-},{"./MainApp.jsx":229,"./components/course/onlineroom/AppRoom.jsx":243,"./components/course/reader/EreadRoom.jsx":258,"react":228,"react-dom":3,"react-router":30}],2:[function(require,module,exports){
+},{"./MainApp.jsx":229,"./components/course/onlineroom/AppRoom.jsx":244,"./components/course/reader/EreadRoom.jsx":259,"react":228,"react-dom":3,"react-router":30}],2:[function(require,module,exports){
 // shim for using process in browser
 
 var process = module.exports = {};
@@ -25474,7 +25474,7 @@ var MainApp = React.createClass({
 
 module.exports = MainApp;
 
-},{"./components/chat/Chat.jsx":230,"./components/course/Course.jsx":236,"./components/setting/Setting.jsx":263,"react":228}],230:[function(require,module,exports){
+},{"./components/chat/Chat.jsx":230,"./components/course/Course.jsx":237,"./components/setting/Setting.jsx":266,"react":228}],230:[function(require,module,exports){
 'use strict';
 
 var _ChatNav = require('./ChatNav.jsx');
@@ -25493,6 +25493,10 @@ var _ChatRoom = require('./ChatRoom.jsx');
 
 var _ChatRoom2 = _interopRequireDefault(_ChatRoom);
 
+var _NLChat = require('./NLChat.jsx');
+
+var _NLChat2 = _interopRequireDefault(_NLChat);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var React = require('react');
@@ -25503,31 +25507,82 @@ var Chat = React.createClass({
 	getInitialState: function getInitialState() {
 		var h = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
 		return {
-			chatHeight: h - 145
+			chatHeight: h - 145,
+			isLogin: false
 		};
+	},
+	componentWillMount: function componentWillMount() {
+		if (sessionStorage.username && sessionStorage.nickname) {
+			this.setState({
+				isLogin: true
+			});
+		} else {
+			this.setState({
+				isLogin: false
+			});
+		}
+
+		//是否为wechat redirect 过来的
+		if (this.is_weixin()) {
+			var req = new Object();
+			req = this.getRequest();
+			var code = req['code'];
+			if (code != '' && code != undefined) {
+				this.setState({
+					isLogin: true
+				});
+			}
+		}
 	},
 	componentDidMount: function componentDidMount() {
 		$('#nav-bottom').fadeIn();
 	},
+
+	is_weixin: function is_weixin() {
+		var ua = navigator.userAgent.toLowerCase();
+		if (ua.match(/MicroMessenger/i) == "micromessenger") {
+			return true;
+		} else {
+			return false;
+		}
+	},
+	getRequest: function getRequest() {
+		var url = document.location.search;
+		var theRequest = new Object();
+		var strs;
+		if (url.indexOf("?") != -1) {
+			var str = url.substr(1);
+			strs = str.split("&");
+			for (var i = 0; i < strs.length; i++) {
+				theRequest[strs[i].split("=")[0]] = unescape(strs[i].split("=")[1]);
+			}
+		}
+		return theRequest;
+	},
+
 	render: function render() {
 		return React.createElement(
 			'div',
 			null,
-			React.createElement(_ChatNav2.default, null),
-			React.createElement(
+			this.state.isLogin ? React.createElement(
 				'div',
-				{ className: 'panel-group',
-					id: 'accordion', style: {
-						width: '100%',
-						overflowY: 'auto',
-						height: this.state.chatHeight + 'px',
-						maxHeight: this.state.chatHeight + 'px'
-					} },
-				React.createElement(_MyFriend2.default, null),
-				React.createElement(_MyGroup2.default, null),
-				React.createElement(_ChatRoom2.default, null)
-			),
-			' '
+				null,
+				React.createElement(_ChatNav2.default, null),
+				React.createElement(
+					'div',
+					{ className: 'panel-group',
+						id: 'accordion', style: {
+							width: '100%',
+							overflowY: 'auto',
+							height: this.state.chatHeight + 'px',
+							maxHeight: this.state.chatHeight + 'px'
+						} },
+					React.createElement(_MyFriend2.default, null),
+					React.createElement(_MyGroup2.default, null),
+					React.createElement(_ChatRoom2.default, null)
+				),
+				' '
+			) : React.createElement(_NLChat2.default, null)
 		);
 	}
 
@@ -25535,7 +25590,7 @@ var Chat = React.createClass({
 
 module.exports = Chat;
 
-},{"./ChatNav.jsx":232,"./ChatRoom.jsx":233,"./MyFriend.jsx":234,"./MyGroup.jsx":235,"react":228}],231:[function(require,module,exports){
+},{"./ChatNav.jsx":232,"./ChatRoom.jsx":233,"./MyFriend.jsx":234,"./MyGroup.jsx":235,"./NLChat.jsx":236,"react":228}],231:[function(require,module,exports){
 "use strict";
 
 var React = require('react');
@@ -25871,6 +25926,43 @@ module.exports = MyGroup;
 },{"./ChatItem.jsx":231,"react":228}],236:[function(require,module,exports){
 'use strict';
 
+var React = require('react');
+
+var NLChat = React.createClass({
+	displayName: 'NLChat',
+
+	getInitialState: function getInitialState() {
+		var h = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+		return {
+			height: h
+		};
+	},
+
+	render: function render() {
+		return React.createElement(
+			'div',
+			{ style: {
+					width: '100%',
+					height: this.state.height + "px",
+					lineHeight: this.state.height + "px",
+					textAlign: 'center'
+				} },
+			React.createElement(
+				'a',
+				{ href: '#setting-div', 'data-toggle': 'tab' },
+				React.createElement('span', { className: 'glyphicon glyphicon-share-alt' }),
+				'  去登录'
+			)
+		);
+	}
+
+});
+
+module.exports = NLChat;
+
+},{"react":228}],237:[function(require,module,exports){
+'use strict';
+
 var _CourseSwitch = require('./CourseSwitch.jsx');
 
 var _CourseSwitch2 = _interopRequireDefault(_CourseSwitch);
@@ -25920,7 +26012,7 @@ var Course = React.createClass({
 
 module.exports = Course;
 
-},{"./CourseFileList.jsx":238,"./CourseList.jsx":241,"./CourseSwitch.jsx":242,"react":228}],237:[function(require,module,exports){
+},{"./CourseFileList.jsx":239,"./CourseList.jsx":242,"./CourseSwitch.jsx":243,"react":228}],238:[function(require,module,exports){
 'use strict';
 
 var _reactRouter = require('react-router');
@@ -25977,7 +26069,7 @@ var CourseFileItem = React.createClass({
 
 module.exports = CourseFileItem;
 
-},{"react":228,"react-router":30}],238:[function(require,module,exports){
+},{"react":228,"react-router":30}],239:[function(require,module,exports){
 'use strict';
 
 var _CourseFileItem = require('./CourseFileItem.jsx');
@@ -26025,7 +26117,7 @@ var CourseFileList = React.createClass({
 			}]
 		};
 	},
-	componentWillMount: function componentWillMount() {
+	componentDidMount: function componentDidMount() {
 		var thiz = this;
 		$.ajax({
 			async: true,
@@ -26121,7 +26213,7 @@ var CourseFileList = React.createClass({
 
 module.exports = CourseFileList;
 
-},{"./CourseFileItem.jsx":237,"react":228}],239:[function(require,module,exports){
+},{"./CourseFileItem.jsx":238,"react":228}],240:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
@@ -26179,7 +26271,7 @@ var CourseItem = React.createClass({
 
 module.exports = CourseItem;
 
-},{"react":228}],240:[function(require,module,exports){
+},{"react":228}],241:[function(require,module,exports){
 'use strict';
 
 var _reactRouter = require('react-router');
@@ -26225,7 +26317,7 @@ var CourseJoinNav = React.createClass({
 
 module.exports = CourseJoinNav;
 
-},{"react":228,"react-router":30}],241:[function(require,module,exports){
+},{"react":228,"react-router":30}],242:[function(require,module,exports){
 'use strict';
 
 var _CourseItem = require('./CourseItem.jsx');
@@ -26245,15 +26337,57 @@ var CourseList = React.createClass({
 
 	getInitialState: function getInitialState() {
 		return {
-			data_recent: [{ sessionID: "pub", time: "07-25 11:50:18" }, { sessionID: "2001", time: "07-26 11:50:18" }, { sessionID: "2002", time: "07-26 11:50:18" }],
-			data_now: [{ sessionID: "pub", time: "07-25 11:50:18" }, { sessionID: "2001", time: "07-26 11:50:18" }, { sessionID: "2002", time: "07-26 11:50:18" }],
+			data_recent: [],
+			data_now: [{ sessionID: "2001", time: "07-26 11:50:18" }, { sessionID: "2002", time: "07-26 11:50:18" }],
 			data_my: [{ sessionID: "pub", time: "07-25 11:50:18" }, { sessionID: "2001", time: "07-26 11:50:18" }, { sessionID: "2002", time: "07-26 11:50:18" }]
 		};
+	},
+	componentWillMount: function componentWillMount() {
+		if (sessionStorage.recent) {
+			var recent = JSON.parse(sessionStorage.getItem("recent"));
+			this.setState({
+				data_recent: recent
+			});
+		} else {
+			var recent = this.state.data_recent;
+			var timenow = this.getAndFormatTime();
+			var pub = { sessionID: "pub", time: timenow };
+			recent.push(pub);
+			this.setState({
+				data_recent: recent
+			}, function () {
+				sessionStorage.setItem("recent", JSON.stringify(recent));
+			});
+		}
 	},
 	componentDidMount: function componentDidMount() {
 		$('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
 			$('.join_input').val("");
 		});
+	},
+	getAndFormatTime: function getAndFormatTime() {
+		var time = new Date();
+		var month = time.getMonth() + 1;
+		if (month < 10) {
+			month = "0" + month;
+		}
+		var day = time.getDate();
+		if (day < 10) {
+			day = "0" + day;
+		}
+		var hour = time.getHours();
+		if (hour < 10) {
+			hour = "0" + hour;
+		}
+		var minute = time.getMinutes();
+		if (minute < 10) {
+			minute = "0" + minute;
+		}
+		var seconds = time.getSeconds();
+		if (seconds < 10) {
+			seconds = "0" + seconds;
+		}
+		return month + "-" + day + "  " + hour + ":" + minute + ":" + seconds;
 	},
 	render: function render() {
 		return React.createElement(
@@ -26323,7 +26457,7 @@ var CourseList = React.createClass({
 
 module.exports = CourseList;
 
-},{"./CourseItem.jsx":239,"./CourseJoinNav.jsx":240,"react":228}],242:[function(require,module,exports){
+},{"./CourseItem.jsx":240,"./CourseJoinNav.jsx":241,"react":228}],243:[function(require,module,exports){
 "use strict";
 
 var React = require('react');
@@ -26405,9 +26539,6 @@ var CourseSwitch = React.createClass({
 			thiz.setState({
 				isMouseDown: false
 			});
-			if (typeof Storage !== "undefined") {
-				sessionStorage.setItem("model", thiz.state.isCourse);
-			}
 		}, false);
 
 		// window.addEventListener(slideEnd, function(ev) {
@@ -26462,7 +26593,7 @@ var CourseSwitch = React.createClass({
 
 module.exports = CourseSwitch;
 
-},{"react":228}],243:[function(require,module,exports){
+},{"react":228}],244:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -26528,7 +26659,7 @@ var AppRoom = _react2.default.createClass({
 
 module.exports = AppRoom;
 
-},{"./Application.jsx":244,"./NavagationBar.jsx":246,"./NetTip.jsx":247,"./Slider.jsx":248,"react":228,"react-dom":3}],244:[function(require,module,exports){
+},{"./Application.jsx":245,"./NavagationBar.jsx":247,"./NetTip.jsx":248,"./Slider.jsx":249,"react":228,"react-dom":3}],245:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -26641,6 +26772,9 @@ var Application = _react2.default.createClass({
       //
       this.calculateImgProp(this.state.src);
       //
+      var roomid = this.props._roomid;
+      this.saveRoomID(roomid);
+      //
       if (typeof Storage !== "undefined") {
         // if (sessionStorage.username) {
         this.setState({
@@ -26658,18 +26792,64 @@ var Application = _react2.default.createClass({
       window.addEventListener('resize', this.handleResize);
     }
   },
+  saveRoomID: function saveRoomID(id) {
+    if (sessionStorage.recent) {
+      var recent = JSON.parse(sessionStorage.getItem("recent"));
+      var timenow = this.getAndFormatTime();
+      for (var i = 0; i < recent.length; i++) {
+        if (recent[i].sessionID == id) {
+          recent.splice(i, 1);
+        }
+      }
+      var roomID = { sessionID: id, time: timenow };
+      recent.push(roomID);
+      sessionStorage.setItem("recent", JSON.stringify(recent));
+    } else {
+      var recent = [];
+      var timenow = this.getAndFormatTime();
+      var pub = { sessionID: "pub", time: timenow };
+      recent.push(pub);
+      sessionStorage.setItem("recent", JSON.stringify(recent));
+      this.saveRoomID(id);
+    }
+  },
+  getAndFormatTime: function getAndFormatTime() {
+    var time = new Date();
+    var month = time.getMonth() + 1;
+    if (month < 10) {
+      month = "0" + month;
+    }
+    var day = time.getDate();
+    if (day < 10) {
+      day = "0" + day;
+    }
+    var hour = time.getHours();
+    if (hour < 10) {
+      hour = "0" + hour;
+    }
+    var minute = time.getMinutes();
+    if (minute < 10) {
+      minute = "0" + minute;
+    }
+    var seconds = time.getSeconds();
+    if (seconds < 10) {
+      seconds = "0" + seconds;
+    }
+
+    return month + "-" + day + "  " + hour + ":" + minute + ":" + seconds;
+  },
   onConnect: function onConnect(status) {
     var roomid = this.props._roomid;
     var that = this;
-    //console.log(status);
+    console.log(status);
     if (status == Strophe.Status.CONNFAIL) {
-      alert("连接失败！");
+      console.log("连接失败！");
     } else if (status == Strophe.Status.AUTHFAIL) {
-      alert("登录失败！");
+      console.log("登录失败！");
     } else if (status == Strophe.Status.DISCONNECTED) {
-      alert("连接断开！");
+      console.log("连接断开！");
     } else if (status == Strophe.Status.CONNECTED) {
-      //console.log("连接成功！");
+      console.log("连接成功！");
 
       $('#loading').fadeOut();
 
@@ -27038,7 +27218,7 @@ var Application = _react2.default.createClass({
 //import OpenAudio from './alertComponent/OpenAudio.jsx';
 exports.default = Application;
 
-},{"./alertComponent/Loading.jsx":249,"./alertComponent/OpenShare.jsx":250,"./blackBoard/BgImage.jsx":251,"./blackBoard/Canvas.jsx":252,"react":228,"react-router":30}],245:[function(require,module,exports){
+},{"./alertComponent/Loading.jsx":250,"./alertComponent/OpenShare.jsx":251,"./blackBoard/BgImage.jsx":252,"./blackBoard/Canvas.jsx":253,"react":228,"react-router":30}],246:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
@@ -27112,7 +27292,7 @@ var ControlNav = React.createClass({
 
 module.exports = ControlNav;
 
-},{"react":228}],246:[function(require,module,exports){
+},{"react":228}],247:[function(require,module,exports){
 'use strict';
 
 var _MyVideo = require('./navBar/MyVideo.jsx');
@@ -27214,7 +27394,7 @@ var NavagationBar = React.createClass({
 
 module.exports = NavagationBar;
 
-},{"./navBar/Edit.jsx":253,"./navBar/Home.jsx":254,"./navBar/MyVideo.jsx":256,"./navBar/Share.jsx":257,"react":228}],247:[function(require,module,exports){
+},{"./navBar/Edit.jsx":254,"./navBar/Home.jsx":255,"./navBar/MyVideo.jsx":257,"./navBar/Share.jsx":258,"react":228}],248:[function(require,module,exports){
 "use strict";
 
 var React = require('react');
@@ -27246,7 +27426,7 @@ var NetTip = React.createClass({
 
 module.exports = NetTip;
 
-},{"react":228}],248:[function(require,module,exports){
+},{"react":228}],249:[function(require,module,exports){
 "use strict";
 
 var React = require('react');
@@ -27363,7 +27543,7 @@ var Slider = React.createClass({
 
 module.exports = Slider;
 
-},{"react":228}],249:[function(require,module,exports){
+},{"react":228}],250:[function(require,module,exports){
 "use strict";
 
 var React = require('react');
@@ -27413,7 +27593,7 @@ var Loading = React.createClass({
 
 module.exports = Loading;
 
-},{"react":228}],250:[function(require,module,exports){
+},{"react":228}],251:[function(require,module,exports){
 "use strict";
 
 var React = require('react');
@@ -27483,7 +27663,7 @@ var OpenShare = React.createClass({
 
 module.exports = OpenShare;
 
-},{"react":228}],251:[function(require,module,exports){
+},{"react":228}],252:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -27527,7 +27707,7 @@ var BgImage = _react2.default.createClass({
      */
 exports.default = BgImage;
 
-},{"react":228}],252:[function(require,module,exports){
+},{"react":228}],253:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -27795,7 +27975,7 @@ var Canvas = _react2.default.createClass({
      */
 exports.default = Canvas;
 
-},{"react":228}],253:[function(require,module,exports){
+},{"react":228}],254:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
@@ -27872,7 +28052,7 @@ var Edit = React.createClass({
 
 module.exports = Edit;
 
-},{"react":228}],254:[function(require,module,exports){
+},{"react":228}],255:[function(require,module,exports){
 'use strict';
 
 var _reactRouter = require('react-router');
@@ -27912,7 +28092,7 @@ var Home = React.createClass({
 
 module.exports = Home;
 
-},{"react":228,"react-router":30}],255:[function(require,module,exports){
+},{"react":228,"react-router":30}],256:[function(require,module,exports){
 'use strict';
 
 /*
@@ -27990,7 +28170,7 @@ var MyAudio = React.createClass({
 
 module.exports = MyAudio;
 
-},{"react":228}],256:[function(require,module,exports){
+},{"react":228}],257:[function(require,module,exports){
 'use strict';
 
 /*
@@ -28060,7 +28240,7 @@ var MyVideo = React.createClass({
 
 module.exports = MyVideo;
 
-},{"react":228}],257:[function(require,module,exports){
+},{"react":228}],258:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
@@ -28072,7 +28252,7 @@ var Share = React.createClass({
 		return {
 			title: '飞播云板',
 			desc: '邀请你点击进入课堂',
-			imgUrl: 'http://pictoshare.net/PageShare/build/img/pageshare.png',
+			imgUrl: 'http://h5.pageshare.net/pageshare/build/img/pageshare.png',
 			url_now: document.location.href,
 			type: '',
 			dataUrl: ''
@@ -28280,7 +28460,7 @@ var Share = React.createClass({
 
 module.exports = Share;
 
-},{"react":228}],258:[function(require,module,exports){
+},{"react":228}],259:[function(require,module,exports){
 'use strict';
 
 var _Slider = require('../onlineroom/Slider.jsx');
@@ -28452,7 +28632,7 @@ var EreadRoom = React.createClass({
 
 module.exports = EreadRoom;
 
-},{"../onlineroom/ControlNav/ControlNav.jsx":245,"../onlineroom/Slider.jsx":248,"../onlineroom/navBar/Home.jsx":254,"../onlineroom/navBar/MyAudio.jsx":255,"../onlineroom/navBar/MyVideo.jsx":256,"../onlineroom/navBar/Share.jsx":257,"./ReadApplication.jsx":259,"react":228}],259:[function(require,module,exports){
+},{"../onlineroom/ControlNav/ControlNav.jsx":246,"../onlineroom/Slider.jsx":249,"../onlineroom/navBar/Home.jsx":255,"../onlineroom/navBar/MyAudio.jsx":256,"../onlineroom/navBar/MyVideo.jsx":257,"../onlineroom/navBar/Share.jsx":258,"./ReadApplication.jsx":260,"react":228}],260:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -28537,14 +28717,11 @@ var ReadApplication = _react2.default.createClass({
   },
 
   componentWillMount: function componentWillMount() {
-    console.log("will");
     this.calculateImgProp(this.state.src);
   },
   //渲染以后？ 设置为以前收不到Message
   componentDidMount: function componentDidMount() {
-    console.log("mount");
     if (this.isMounted()) {
-      console.log("ISmount");
       var thiz = this;
       $('#nav-bottom').fadeOut();
       //如果是分享出来的
@@ -28988,7 +29165,95 @@ var ReadApplication = _react2.default.createClass({
      */
 exports.default = ReadApplication;
 
-},{"../onlineroom/alertComponent/Loading.jsx":249,"../onlineroom/blackBoard/BgImage.jsx":251,"../onlineroom/blackBoard/Canvas.jsx":252,"react":228,"react-router":30}],260:[function(require,module,exports){
+},{"../onlineroom/alertComponent/Loading.jsx":250,"../onlineroom/blackBoard/BgImage.jsx":252,"../onlineroom/blackBoard/Canvas.jsx":253,"react":228,"react-router":30}],261:[function(require,module,exports){
+"use strict";
+
+var React = require('react');
+
+var ExitBtn = React.createClass({
+	displayName: "ExitBtn",
+
+
+	handClick: function handClick(e) {
+		sessionStorage.clear();
+		window.location.reload(false);
+	},
+
+	render: function render() {
+		return React.createElement(
+			"div",
+			{ className: "well well-sm", onClick: this.handClick },
+			React.createElement("span", { className: "glyphicon glyphicon-log-out" }),
+			"  退出"
+		);
+	}
+
+});
+
+module.exports = ExitBtn;
+
+},{"react":228}],262:[function(require,module,exports){
+"use strict";
+
+var React = require('react');
+
+var FocusUs = React.createClass({
+	displayName: "FocusUs",
+
+
+	getInitialState: function getInitialState() {
+		var is_weixin = this.is_weixin();
+		return {
+			is_weixin: is_weixin
+		};
+	},
+	is_weixin: function is_weixin() {
+		var ua = navigator.userAgent.toLowerCase();
+		if (ua.match(/MicroMessenger/i) == "micromessenger") {
+			return true;
+		} else {
+			return false;
+		}
+	},
+	handleFocus: function handleFocus(e) {
+		if (sessionStorage.subscribe && sessionStorage.focus) {
+			var sub = sessionStorage.getItem("subscribe");
+			var focus = sessionStorage.getItem("focus");
+			document.location = "http://mp.weixin.qq.com/mp/profile_ext?action=home&__biz=" + focus + "==&scene=110#&wechat_redirect";
+		} else {
+			document.location = "http://mp.weixin.qq.com/mp/profile_ext?action=home&__biz=MzIyNzE3NjM1Nw==&scene=110#&wechat_redirect";
+		}
+	},
+	handleClick: function handleClick(e) {
+		document.location = "http://yijiafeibo.com";
+	},
+	render: function render() {
+		return React.createElement(
+			"div",
+			null,
+			" ",
+			this.state.is_weixin ? React.createElement(
+				"div",
+				{ className: "well well-sm", onClick: this.handleFocus },
+				" ",
+				React.createElement("span", { className: "glyphicon glyphicon-heart-empty" }),
+				"  关注我们"
+			) : React.createElement(
+				"div",
+				{ className: "well well-sm",
+					onClick: this.handleClick },
+				React.createElement("span", { className: "glyphicon glyphicon-heart-empty" }),
+				"  关注我们"
+			),
+			" "
+		);
+	}
+
+});
+
+module.exports = FocusUs;
+
+},{"react":228}],263:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
@@ -29036,7 +29301,7 @@ var HasLoginedNav = React.createClass({
 			this.setState({
 				nickname: sessionStorage.getItem('nickname')
 			}, function () {
-				console.log(this.state.nickname);
+				//console.log(this.state.nickname);
 			});
 		}
 	},
@@ -29058,7 +29323,7 @@ var HasLoginedNav = React.createClass({
 				var arry = result.split(":");
 				var subscribe = arry[3];
 				if (arry[2] != '' && arry[0] != '' && arry[1] != '' && arry[3] != '') {
-					this.localSave(arry[2], arry[3], arry[0], arry[1]);
+					this.localSave(arry[2], arry[3], arry[0], arry[1], arry[4]);
 				} else {
 					sessionStorage.clear();
 					document.location = thiz.state.redirect;
@@ -29066,12 +29331,13 @@ var HasLoginedNav = React.createClass({
 			}.bind(this)
 		});
 	},
-	localSave: function localSave(n, s, o, t) {
+	localSave: function localSave(n, s, o, t, f) {
 		if (typeof Storage !== "undefined") {
 			sessionStorage.setItem("nickname", n);
 			sessionStorage.setItem("subscribe", s);
 			sessionStorage.setItem("username", o);
 			sessionStorage.setItem("password", t);
+			sessionStorage.setItem("focus", f);
 			this.setState({
 				nickname: sessionStorage.getItem('nickname')
 			});
@@ -29120,7 +29386,7 @@ var HasLoginedNav = React.createClass({
 
 module.exports = HasLoginedNav;
 
-},{"react":228}],261:[function(require,module,exports){
+},{"react":228}],264:[function(require,module,exports){
 'use strict';
 
 var _GuestLogin = require('./login/GuestLogin.jsx');
@@ -29220,7 +29486,7 @@ var LoginType = React.createClass({
 
 module.exports = LoginType;
 
-},{"./login/GuestLogin.jsx":264,"./login/PageShareLogin.jsx":265,"./login/WeChatLogin.jsx":266,"react":228}],262:[function(require,module,exports){
+},{"./login/GuestLogin.jsx":267,"./login/PageShareLogin.jsx":268,"./login/WeChatLogin.jsx":269,"react":228}],265:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
@@ -29254,7 +29520,7 @@ var NotLoginNav = React.createClass({
 
 module.exports = NotLoginNav;
 
-},{"react":228}],263:[function(require,module,exports){
+},{"react":228}],266:[function(require,module,exports){
 'use strict';
 
 var _NotLoginNav = require('./NotLoginNav.jsx');
@@ -29268,6 +29534,14 @@ var _LoginType2 = _interopRequireDefault(_LoginType);
 var _HasLoginedNav = require('./HasLoginedNav.jsx');
 
 var _HasLoginedNav2 = _interopRequireDefault(_HasLoginedNav);
+
+var _FocusUs = require('./FocusUs.jsx');
+
+var _FocusUs2 = _interopRequireDefault(_FocusUs);
+
+var _ExitBtn = require('./ExitBtn.jsx');
+
+var _ExitBtn2 = _interopRequireDefault(_ExitBtn);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -29305,13 +29579,11 @@ var Setting = React.createClass({
 			}
 		}
 	},
+
 	componentDidMount: function componentDidMount() {
 		$('#nav-bottom').fadeIn();
 	},
-	handleExit: function handleExit(e) {
-		sessionStorage.clear();
-		window.location.reload(false);
-	},
+
 	is_weixin: function is_weixin() {
 		var ua = navigator.userAgent.toLowerCase();
 		if (ua.match(/MicroMessenger/i) == "micromessenger") {
@@ -29320,6 +29592,7 @@ var Setting = React.createClass({
 			return false;
 		}
 	},
+
 	getRequest: function getRequest() {
 		var url = document.location.search;
 		var theRequest = new Object();
@@ -29338,19 +29611,8 @@ var Setting = React.createClass({
 			'div',
 			null,
 			React.createElement(_HasLoginedNav2.default, null),
-			React.createElement(
-				'div',
-				{ className: 'exit-app' },
-				React.createElement(
-					'button',
-					{ onClick: this.handleExit },
-					React.createElement(
-						'span',
-						{ className: 'glyphicon glyphicon-log-out' },
-						'退出登录'
-					)
-				)
-			)
+			React.createElement(_FocusUs2.default, null),
+			React.createElement(_ExitBtn2.default, null)
 		) : React.createElement(
 			'div',
 			null,
@@ -29363,7 +29625,7 @@ var Setting = React.createClass({
 
 module.exports = Setting;
 
-},{"./HasLoginedNav.jsx":260,"./LoginType.jsx":261,"./NotLoginNav.jsx":262,"react":228}],264:[function(require,module,exports){
+},{"./ExitBtn.jsx":261,"./FocusUs.jsx":262,"./HasLoginedNav.jsx":263,"./LoginType.jsx":264,"./NotLoginNav.jsx":265,"react":228}],267:[function(require,module,exports){
 'use strict';
 
 var _reactRouter = require('react-router');
@@ -29428,7 +29690,7 @@ var GuestLogin = React.createClass({
 
 module.exports = GuestLogin;
 
-},{"react":228,"react-router":30}],265:[function(require,module,exports){
+},{"react":228,"react-router":30}],268:[function(require,module,exports){
 "use strict";
 
 var React = require('react');
@@ -29535,7 +29797,7 @@ var PageShareLogin = React.createClass({
 
 module.exports = PageShareLogin;
 
-},{"react":228}],266:[function(require,module,exports){
+},{"react":228}],269:[function(require,module,exports){
 'use strict';
 
 var React = require('react');

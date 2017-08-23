@@ -10,8 +10,8 @@ var MainApp = React.createClass({
 
     componentDidMount:function(){
         var tab=this.props.params.tab;
-       if(tab=="course"){
-         $('#tab-course').tab('show');
+        if(tab=="course"){
+          $('#tab-course').tab('show');
        }
     },
 

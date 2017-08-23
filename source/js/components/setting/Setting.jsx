@@ -1,6 +1,8 @@
 import NotLoginNav from './NotLoginNav.jsx';
 import LoginType from './LoginType.jsx';
 import HasLoginedNav from './HasLoginedNav.jsx';
+import FocusUs from './FocusUs.jsx';
+import ExitBtn from './ExitBtn.jsx';
 
 var React = require('react');
 
@@ -35,14 +37,13 @@ var Setting = React.createClass({
 		}
 
 	},
+
+
 	componentDidMount:function(){
 		$('#nav-bottom').fadeIn();
 	},
-	handleExit:function(e){
-		sessionStorage.clear();
-		window.location.reload(false);
-	},
-	is_weixin:function(){
+
+	is_weixin: function() {
 		var ua = navigator.userAgent.toLowerCase();
 		if (ua.match(/MicroMessenger/i) == "micromessenger") {
 			return true;
@@ -50,6 +51,7 @@ var Setting = React.createClass({
 			return false;
 		}
 	},
+
 	getRequest: function() {
 		var url = document.location.search;
 		var theRequest = new Object();
@@ -67,7 +69,8 @@ var Setting = React.createClass({
 		return (
 			this.state.isLogin?<div>
 				<HasLoginedNav/>
-				<div className="exit-app"><button onClick={this.handleExit}><span className="glyphicon glyphicon-log-out">退出登录</span></button></div>
+				<FocusUs/>
+				<ExitBtn/>
 			</div>:<div>
 				<NotLoginNav/>
 				<LoginType/>

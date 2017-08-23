@@ -86,6 +86,9 @@ let Application = React.createClass({
       //
       this.calculateImgProp(this.state.src);
       //
+      var roomid=this.props._roomid;
+      this.saveRoomID(roomid);
+      //
       if (typeof(Storage) !== "undefined") {
         // if (sessionStorage.username) {
           this.setState({
@@ -103,18 +106,65 @@ let Application = React.createClass({
       window.addEventListener('resize', this.handleResize);
     }
   },
+  saveRoomID:function(id){
+      if(sessionStorage.recent){
+          var recent=JSON.parse(sessionStorage.getItem("recent"));
+          var timenow=this.getAndFormatTime();
+          for(var i=0;i<recent.length;i++){
+            if(recent[i].sessionID==id){
+              recent.splice(i,1);
+            }
+          }
+          var roomID={sessionID:id,time:timenow};
+          recent.push(roomID);
+          sessionStorage.setItem("recent",JSON.stringify(recent));
+        }else{
+            var recent=[];
+            var timenow=this.getAndFormatTime();
+            var pub={sessionID:"pub",time:timenow};
+            recent.push(pub);
+            sessionStorage.setItem("recent",JSON.stringify(recent));
+            this.saveRoomID(id);
+        }
+  },
+  getAndFormatTime:function(){
+      var time=new Date();
+      var month=time.getMonth()+1;
+      if(month<10){
+        month="0"+month
+      }
+      var day=time.getDate();
+      if(day<10){
+        day="0"+day;
+      }
+      var hour=time.getHours();
+      if(hour<10){
+        hour="0"+hour;
+      }
+      var minute=time.getMinutes();
+      if(minute<10){
+        minute="0"+minute;
+      }
+      var seconds=time.getSeconds();
+      if(seconds<10){
+        seconds="0"+seconds;
+      }
+
+      return month+"-"+day+"  "+hour+":"+minute+":"+seconds
+  },
   onConnect: function(status) {
     var roomid = this.props._roomid;
     var that = this;
-    //console.log(status);
+    console.log(status);
     if (status == Strophe.Status.CONNFAIL) {
-      alert("连接失败！");
+      console.log("连接失败！");
     } else if (status == Strophe.Status.AUTHFAIL) {
-      alert("登录失败！");
+       console.log("登录失败！");
     } else if (status == Strophe.Status.DISCONNECTED) {
-      alert("连接断开！");
+       console.log("连接断开！");
     } else if (status == Strophe.Status.CONNECTED) {
-      //console.log("连接成功！");
+      console.log("连接成功！");
+
 
       $('#loading').fadeOut();
 

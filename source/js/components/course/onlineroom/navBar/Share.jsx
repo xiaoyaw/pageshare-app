@@ -5,7 +5,7 @@ var Share = React.createClass({
 		return {
 			title: '飞播云板',
 			desc: '邀请你点击进入课堂',
-			imgUrl: 'http://pictoshare.net/PageShare/build/img/pageshare.png',
+			imgUrl: 'http://h5.pageshare.net/pageshare/build/img/pageshare.png',
 			url_now: document.location.href,
 			type: '',
 			dataUrl: ''

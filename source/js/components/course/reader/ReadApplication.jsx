@@ -67,14 +67,11 @@ let ReadApplication = React.createClass({
      console.log("un");
   },
   componentWillMount:function(){
-    console.log("will");
      this.calculateImgProp(this.state.src);
   },
   //渲染以后？ 设置为以前收不到Message
   componentDidMount: function() {
-     console.log("mount");
     if(this.isMounted()){
-      console.log("ISmount");
       var thiz = this;
         $('#nav-bottom').fadeOut();
       //如果是分享出来的

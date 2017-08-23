@@ -41,7 +41,7 @@ var HasLoginedNav = React.createClass({
 			this.setState({
 				nickname:sessionStorage.getItem('nickname') 
 			},function(){
-				console.log(this.state.nickname);
+				//console.log(this.state.nickname);
 			});
 		}
 	},
@@ -63,7 +63,7 @@ var HasLoginedNav = React.createClass({
 					var arry = result.split(":");
 					var subscribe = arry[3];
 						if (arry[2] != '' && arry[0] != '' && arry[1] != '' && arry[3] != '') {
-							this.localSave(arry[2], arry[3], arry[0], arry[1]);
+							this.localSave(arry[2], arry[3], arry[0], arry[1],arry[4]);
 						}else{
 							sessionStorage.clear();
 							document.location=thiz.state.redirect;
@@ -71,12 +71,13 @@ var HasLoginedNav = React.createClass({
 				}.bind(this),
 			});
 	},
-	localSave: function(n, s, o, t) {
+	localSave: function(n, s, o, t,f) {
 		if (typeof(Storage) !== "undefined") {
 			sessionStorage.setItem("nickname", n);
 			sessionStorage.setItem("subscribe", s);
 			sessionStorage.setItem("username", o);
 			sessionStorage.setItem("password", t);
+			sessionStorage.setItem("focus", f);
 			this.setState({
 				nickname:sessionStorage.getItem('nickname') 
 			});

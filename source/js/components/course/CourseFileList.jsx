@@ -37,7 +37,7 @@ var CourseFileList = React.createClass({
 				}] 
 			};
 		},	
-	componentWillMount:function(){
+	componentDidMount:function(){
 		var thiz=this;
 			$.ajax({
 			async: true,
